@@ -1,2 +1,4 @@
 # VS Code Config
-.vscode
+.vscode/
+# Study Records
+.study/
