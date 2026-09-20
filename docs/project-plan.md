@@ -80,9 +80,13 @@ MVP 是能够解决一个核心问题、可以实际使用并检验价值的最�
 - API 失败规则草案：新增输入缺失或无效时返回明确的校验错误且不保存；保存或读取失败时明确报错，不能假报保存成功，也不能把读取失败显示为没有记录。具体字段名、日期格式及错误结构在编写对应接口前确定。
 - F1 输入规则（2026-09-17 已确认）：公司名称和岗位名称为必填文本，去除首尾空白后不得为空；投递日期为必填日期，必须能够解析为真实年月日；当前进度为必填的受限状态值。第一版状态细分为“已投递、待笔试、笔试后等待、待面试、面试后等待、已录用、已拒绝、停止追踪”。其中两个“结束后等待”状态用于表示当前环节已完成但尚无下一步通知，支持判断等待时间及是否停止追踪。当前程序枚举值采用学习者编写的 `applied`、`awaiting_written`、`finish_written`、`awaiting_interview`、`finish_interview`、`offered`、`rejected`、`stopped`；命名并非最终对外文案，但现阶段不继续打磨。下一步安排字段在实现 F2 时再补充规则。
 - 认证、错误处理与日志：随访问范围和真实实现需要逐步确定；部署前明确适用的访问保护与数据处理要求，不提前承诺复杂账户系统。
-- 目录建议：后端代码放在 backend，前端实现时再建立 frontend；目录是否创建待后续检查，不提前生成模块骨架。开发环境沿用学习者已有的 Conda，不再要求创建 .venv；环境目录不纳入 Git 或交付。
+- 当前目录：后端代码位于 `backend`；2026-09-20 已用 create-vite 生成 `frontend` 的 React + TypeScript + ESLint 骨架并安装清单中声明的依赖，生成 `package-lock.json`，本地 `node_modules` 已由前端忽略规则排除；模板 lint、生产构建、开发服务器与浏览器页面交互均已验证，`dist/` 已生成并被忽略，尚未加入业务实现。开发环境沿用学习者已有的 Conda，不再要求创建 `.venv`；环境目录不纳入 Git 或交付。
 - 环境证据（2026-09-17）：学习者指定 Conda 环境 study，路径 /home/shijun/.local/opt/anaconda3/envs/study；直接使用其中的 bin/python 只读检查，确认 Python 3.14.7、pip 26.2.1。已核对 FastAPI 0.138.0、Uvicorn 0.52.4、SQLAlchemy 2.0.52 均位于该环境，标准库 `sqlite3` 使用 SQLite 3.53.4。此前系统 Python 3.14.4 不代表项目环境；不要求另建 .venv。环境路径仅为本机记录，不作为应用硬编码依赖。
 - 前端环境证据（2026-09-20）：Node.js 22.22.1 与 npm 9.2.0 可用，Node.js 满足 Vite 官方当前的最低版本范围。Ubuntu 仓库中的同名 `vite` 1.4-6 实为 ViTE 性能跟踪可视化器，曾被学习者误装，现已移除并确认 `/usr/bin/vite` 不存在；JavaScript Vite 应通过 npm 项目工具链创建或安装，不采用该 apt 包。
+- 前端依赖证据（2026-09-20）：学习者在 `frontend` 执行安装，npm 报告新增 162 个包、审计 163 个包且发现 0 个漏洞；只读复核确认 `package-lock.json` 与本地 `node_modules` 已生成，后者由 `frontend/.gitignore` 忽略。该结果只证明依赖可安装，尚不证明 lint、构建或页面运行成功。
+- 前端 lint 证据（2026-09-20）：学习者运行清单已有的 lint 脚本，ESLint 检查当前前端目录后未报告问题并正常结束。该结果只证明当前模板满足已配置的静态规则，尚不证明 TypeScript/Vite 构建或浏览器运行成功。
+- 前端构建证据（2026-09-20）：学习者运行清单已有的 build 脚本；`tsc -b` 正常结束后，Vite 8.3.0 转换 20 个模块并生成生产 HTML、CSS、JavaScript 与静态资源。`frontend/dist/` 已由忽略规则排除。该结果尚不证明开发服务器和浏览器访问正常。
+- 前端运行证据（2026-09-20）：学习者启动 Vite 8.3.0 开发服务器，终端显示 148 ms 内就绪并提供 `http://localhost:5173/`；浏览器成功显示 React/Vite 模板，计数按钮已交互到 4。该结果证明模板开发链路和基础浏览器交互可用，不代表 Internship Tracker 业务前端已经实现。
 - 数据库环境证据与调整（2026-09-17）：Docker Engine 与 Compose 可用，但 Docker Hub 不可达、本机无镜像；学习者最初确认 SQLite 过渡，随后发现 Ubuntu 清华镜像提供 PostgreSQL，并决定改为本机服务。已安装并核对 PostgreSQL 服务端/客户端 18.6；study 环境已安装 psycopg 3.3.5。服务监听、最小权限项目角色、由其拥有的 `internship_tracker` 数据库、TCP 密码认证及 SQLAlchemy Engine 连接均已验证；首张业务表尚未创建。
 - 已放入 `data/` 的 SQLite 文件仍是 0 字节空文件，没有表或业务数据；`data/` 保持 Git 忽略，当前不作为应用数据库。是否清理可在 PostgreSQL接入完成后处理，不影响当前实现。
 - 当前后端结构（2026-09-19）：`backend/main.py` 提供应用、健康路由、可持久保存的新增路由和集合读取路由，`schemas.py` 定义创建请求、读取响应和状态枚举，`config.py` 从本地环境读取数据库配置，`database.py` 提供 Engine、`SessionLocal`、请求级 Session 依赖与共享 Base，`models.py` 登记 `Application` 表模型。首张 `applications` 表已核验五列、主键和命名 CHECK；`.env` 不进入 Git。POST 已通过 HTTP 获得 201 与数据库主键，GET 已通过 HTTP 返回数据库现有记录数组；更新、删除和前端尚未实现。
