@@ -1,121 +1,58 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
 import './App.css'
+import { useState } from 'react';
 
 function App() {
-  const [count, setCount] = useState(0)
+  // 描述接口 JSON 中的状态取值与记录结构；这些类型不执行运行时数据校验。
+  type ApplicationStatus = "applied" | "awaiting_written" | "finish_written" | "awaiting_interview" |
+    "finish_interview" | "offered" | "rejected" | "stopped";
+
+  interface Application {
+    id: number,
+    company_name: string,
+    position_name: string,
+    applied_on: string,
+    status: ApplicationStatus
+  }
+
+  // 当前使用本地示例记录练习展示，尚未从后端或数据库读取。
+  const application_1: Application = {
+    id: 1,
+    company_name: "test company 1",
+    position_name: "test position 1",
+    applied_on: "2026-10-09",
+    status: "applied"
+  }
+  const application_2: Application = {
+    id: 2,
+    company_name: "test company 2",
+    position_name: "test position 2",
+    applied_on: "2026-10-09",
+    status: "applied"
+  }
+
+  const the_list = [application_1, application_2];
+  // const the_list: Application[] = [];
+  // 每条记录转换为一个 React 元素；key 用于识别条目，内容中的 id 仅用于显示。
+  const map = the_list.map((item) => { return <li key={item.id}>{item.id}, {item.company_name}, {item.position_name}, {item.applied_on}, {item.status}</li> });
+
+  const [is_loading] = useState(false);
+  const [errorMsg] = useState("");
+  function renderApplicationContent() {
+    if (is_loading)
+      return "正在加载";
+    if (!(errorMsg === ""))
+      return errorMsg;
+    if (the_list.length === 0)
+      return "暂无投递记录";
+    return <ul>{map}</ul>;
+  }
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+      <h1> 投递记录 </h1>
+      {renderApplicationContent()}
     </>
+
   )
 }
 

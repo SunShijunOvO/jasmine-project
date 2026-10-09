@@ -23,7 +23,7 @@ venv/
 /data/
 
 # Editor settings
-/.vscode/
+.vscode/
 .idea/
 
 # Local study records
